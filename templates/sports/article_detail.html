@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="article-container">
+    
+    <!-- 1. Заголовок и мета-данные -->
+    <header>
+        <h1>{{ article.title }}</h1>
+        <p class="meta" style="color: gray; font-size: 0.9em;">
+            <!-- Показываем автора, если есть, иначе 'Редакция' -->
+            Автор: <strong>{{ article.author.username|default:"Редакция" }}</strong> | 
+            Опубликовано: {{ article.created_at|date:"d E Y в H:i" }}
+        </p>
+    </header>
+
+    <hr>
+
+    <!-- 2. Основное изображение -->
+    {% if article.main_image %}
+        <div class="article-image">
+            <img src="{{ article.main_image.url }}" alt="{{ article.title }}" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+        <br>
+    {% endif %}
+
+    <!-- 3. Текст статьи -->
+    <article>
+        <!-- Фильтр linebreaks превращает переносы строк в теги <p> и <br> -->
+        {{ article.content|linebreaks }}
+    </article>
+
+    <hr>
+
+    <!-- 4. Блок связей -->
+    <div class="related-info" style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+        
+        <!-- Если новость привязана к конкретному матчу -->
+        {% if article.match %}
+            <p><strong>Матч:</strong> {{ article.match }} ({{ article.match.get_status_display }})</p>
+        {% endif %}
+
+        <!-- Связанные команды -->
+        {% if article.related_teams.exists %}
+            <p><strong>Команды:</strong>
+                {% for team in article.related_teams.all %}
+                    <!-- Можно сделать ссылкой, если есть view для команды -->
+                    <span style="background: #e1e1e1; padding: 2px 5px; border-radius: 3px;">
+                        {{ team.name }}
+                    </span>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <!-- Связанные игроки -->
+        {% if article.related_athletes.exists %}
+            <p><strong>Упомянутые спортсмены:</strong>
+                {% for athlete in article.related_athletes.all %}
+                    <a href="#">{{ athlete.first_name }} {{ athlete.last_name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        <!-- Теги -->
+        {% if article.tags.exists %}
+            <div class="tags" style="margin-top: 10px;">
+                {% for tag in article.tags.all %}
+                    <span style="color: blue;">#{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- 5. Кнопка "Назад" -->
+    <br>
+    <a href="{% url 'article_list' %}" class="btn">← Вернуться к новостям</a>
+
+</div>
+{% endblock %}
