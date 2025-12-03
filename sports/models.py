@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from django.urls import reverse
 
 # Create your models here.
 
@@ -74,6 +76,7 @@ class Athlete(models.Model):
 #события
 
 class Match(models.Model):
+    #choices в поле модели
     STATUS_CHOICES = (
         ("scheduled", "Scheduled"),
         ("live", "Live"),
@@ -83,6 +86,8 @@ class Match(models.Model):
 
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="matches")
 
+    # Задание related_name
+    # Позволяет обращаться от команды к матчам: team.home_matches.all()
     home_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="home_matches")
     away_team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="away_matches")
 
@@ -104,6 +109,11 @@ class Match(models.Model):
 
 #контент
 
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        # Переопределяем исходный запрос, возвращая только опубликованные статьи
+        return super().get_queryset().filter(is_published=True)
+
 class Tag(models.Model):
     name = models.CharField("Tag name", max_length=200)
     slug = models.SlugField(unique=True, help_text="URL")
@@ -119,7 +129,7 @@ class Article(models.Model):
 
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    created_at = models.DateTimeField("Article creation time", auto_now_add=True)
+    created_at = models.DateTimeField("Article creation time", default=timezone.now) #использование timezone
     updated_at = models.DateTimeField("Article update time", auto_now=True)
     is_published = models.BooleanField("Article published", default=True)
 
@@ -136,5 +146,17 @@ class Article(models.Model):
     #article tags
     tags = models.ManyToManyField(Tag, related_name="tags", blank=True)
 
-    def __str__(self):
+    #использование менеджеров
+    objects = models.Manager()  # Стандартный менеджер
+    published = PublishedManager()  # Свой менеджер
+
+    def __str__(self): #метод __str__
         return f"{self.title}"
+
+    def get_absolute_url(self):
+        # Генерирует ссылку вида /news/my-article-slug/ (использование get_absolute_url)
+        return reverse('article_detail', kwargs={'slug': self.slug})
+
+    class Meta:
+        #class Meta: ordering
+        ordering = ['-created_at']  # Сортировка: сначала новые
