@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum, Q
 from django.utils import timezone
 from .models import Article, Match, Team
+from django.contrib.auth import logout
 #from .forms import UserRegisterForm  # Форму создадим позже
 
 
@@ -83,3 +84,7 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def logout_user(request):
+    logout(request) # Удаляет данные сессии (разлогинивает)
+    return redirect('home') # Перенаправляет на главную страницу
