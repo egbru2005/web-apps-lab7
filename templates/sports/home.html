@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load sports_tags %} <!-- Загружаем наши теги -->
+
+{% block content %}
+    <h1>Матчи</h1>
+
+    <!-- Использование 2х шаблонных фильтров -->
+    <!-- 1. Фильтр date -->
+    <p>Сегодня: {{ matches.0.date_time|date:"d M Y" }}</p>
+    <!-- 2. Фильтр upper -->
+    <p>Статус первого матча: {{ matches.0.get_status_display|upper }}</p>
+
+    <ul>
+    {% for match in matches %}
+        <li>
+            <!-- Использование __ (в шаблоне через точку) -->
+            {{ match.home_team.name }} - {{ match.away_team.name }}
+
+            <!-- Использование простого тега -->
+            (Всего голов: {% count_stats match.score_home match.score_away %})
+        </li>
+    {% endfor %}
+    </ul>
+
+    <!-- Использование inclusion tag -->
+    <div class="sidebar">
+        <h3>Свежие новости</h3>
+        {% show_latest_news 5 %}
+    </div>
+
+    <!-- Использование тега с контекстом -->
+    <p style="color: {% user_status_color %}">Ваш статус пользователя</p>
+
+    <!-- Аутентификация -->
+    {% if user.is_authenticated %}
+        Привет, {{ user.username }}! <a href="{% url 'logout' %}">Выйти</a>
+    {% else %}
+        <a href="{% url 'login' %}">Войти</a> | <a href="{% url 'register' %}">Регистрация</a>
+    {% endif %}
+
+{% endblock %}

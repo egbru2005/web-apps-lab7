@@ -15,13 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.contrib.auth import views as auth_views
+from sports import views
 urlpatterns = [
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
+    path('news/', views.article_list, name='article_list'),
+    path('news/<slug:slug>/', views.article_detail, name='article_detail'),
+    path('register/', views.register, name='register'),
+
+    # Встроенные view для логина/логаута
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
 #allow users to access media

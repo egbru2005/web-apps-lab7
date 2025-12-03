@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Спортивные новости</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'home' %}">Главная</a> |
+            <a href="{% url 'article_list' %}">Новости</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Сюда будет вставляться контент из home.html -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2023 СпортСайт</p>
+    </footer>
+</body>
+</html>
