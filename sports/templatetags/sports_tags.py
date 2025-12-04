@@ -7,7 +7,7 @@ register = template.Library()
 @register.simple_tag
 def count_stats(home_score, away_score):
     #Суммирует два числа (например, счет матча)
-    if (home_score == None or away_score == None):
+    if home_score is None or away_score is None:
         return 0
     return home_score + away_score
 
