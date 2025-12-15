@@ -100,12 +100,32 @@ class Match(models.Model):
 
     broadcast_url = models.URLField("Broadcast URL", blank=True)
 
+    # models.ManyToManyField с through
+    players = models.ManyToManyField(
+        Athlete,
+        through='MatchParticipation',
+        related_name="matches_played",
+        blank=True
+    )
+
     class Meta:
         ordering = ["-date_time"]  #class metadata: order by game start time
 
     def __str__(self):
         return f"{self.home_team.name} vs {self.away_team.name}"
 
+    # промежуточная модель для through
+class MatchParticipation(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
+
+    # Дополнительные поля (payload) связи
+    goals_scored = models.PositiveIntegerField("Goals", default=0)
+    minutes_played = models.PositiveIntegerField("Minutes played", default=90)
+    yellow_card = models.BooleanField("Yellow card?", default=False)
+
+    class Meta:
+        verbose_name = "Player statistics"
 
 #контент
 
