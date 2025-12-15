@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Все новости</h1>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'article_create' %}" style="background: green; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">+ Добавить новость</a>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    <div class="news-list">
+        {% for article in posts %}
+            <div class="news-item" style="margin-bottom: 20px;">
+                <h2>
+                    <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                </h2>
+                
+                <small style="color: gray;">
+                    {{ article.created_at|date:"d M Y" }} | Автор: {{ article.author.username|default:"Редакция" }}
+                </small>
+
+                <p>
+                    {{ article.content|truncatewords:30 }}
+                </p>
+                
+                <a href="{{ article.get_absolute_url }}">Читать далее →</a>
+            </div>
+        {% empty %}
+            <p>Новостей пока нет.</p>
+        {% endfor %}
+    </div>
+
+    <div class="pagination" style="margin-top: 20px; text-align: center;">
+        <span class="step-links">
+            {% if posts.has_previous %}
+                <a href="?page=1">&laquo; Первая</a>
+                <a href="?page={{ posts.previous_page_number }}">Предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+                Страница {{ posts.number }} из {{ posts.paginator.num_pages }}.
+            </span>
+
+            {% if posts.has_next %}
+                <a href="?page={{ posts.next_page_number }}">Следующая</a>
+                <a href="?page={{ posts.paginator.num_pages }}">Последняя &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+{% endblock %}

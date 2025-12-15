@@ -74,5 +74,21 @@
     <br>
     <a href="{% url 'article_list' %}" class="btn">← Вернуться к новостям</a>
 
+    <!-- блок управления -->
+    {% if user == article.author or user.is_superuser %}
+        <div style="margin-top: 20px; padding: 10px; border: 1px dashed red;">
+            <strong>Управление:</strong>
+            
+            <!-- Ссылка на редактирование (передаем pk статьи) -->
+            <a href="{% url 'article_update' article.pk %}" style="color: blue; margin-right: 15px;">
+                Редактировать
+            </a>
+            
+            <!-- Ссылка на удаление -->
+            <a href="{% url 'article_delete' article.pk %}" style="color: red;">
+                Удалить
+            </a>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

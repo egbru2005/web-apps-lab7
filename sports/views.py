@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.shortcuts import render
 
 # Create your views here.
@@ -6,6 +8,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum, Q
 from django.utils import timezone
+
+from .forms import ArticleForm
 from .models import Article, Match, Team
 from django.contrib.auth import logout
 from django.contrib.auth import login
@@ -88,3 +92,67 @@ def register(request):
 def logout_user(request):
     logout(request) # Удаляет данные сессии (разлогинивает)
     return redirect('home') # Перенаправляет на главную страницу
+
+# values и values_list
+def stats_view(request):
+    # values() возвращает список словарей
+    # [{'name':'CSKA','city':'Moscow'}]
+    teams_data = Team.objects.values('name', 'city')
+
+    # values_list() возвращает плоский список
+    # ['Live', 'Finished']
+    statuses = Match.objects.values_list('status', flat=True).distinct()
+
+    return render(request, 'sports/stats.html', {
+        'teams_data': teams_data,
+        'statuses': statuses
+    })
+
+# создание/изменение/удаление (CRUD)
+@login_required
+def article_create(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.author = request.user
+            article.save()
+            form.save_m2m()
+            return redirect('article_list')
+    else:
+        form = ArticleForm()
+
+    return render(request, 'sports/article_form.html', {'form': form, 'action': 'Create'})
+
+
+@login_required
+def article_update(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+
+    # Простая проверка прав
+    if article.author != request.user and not request.user.is_superuser:
+        return HttpResponseForbidden("You don't have permission to edit this article.")
+
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+            return redirect('article_detail', slug=article.slug)
+    else:
+        form = ArticleForm(instance=article)
+
+    return render(request, 'sports/article_form.html', {'form': form, 'action': 'Edit'})
+
+
+@login_required
+def article_delete(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+
+    if article.author != request.user and not request.user.is_superuser:
+        return HttpResponseForbidden("You don't have permission to delete this article.")
+
+    if request.method == 'POST':
+        article.delete()
+        return redirect('article_list')
+
+    return render(request, 'sports/article_confirm_delete.html', {'article': article})

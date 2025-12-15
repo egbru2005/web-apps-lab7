@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Stats list (values/values_list):</h1>
+    
+    <h3>Teams and cities (dict):</h3>
+    <ul>
+        {% for item in teams_data %}
+            <li>{{ item.name }} — {{ item.city }}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Unique match statuses (flat list):</h3>
+    <p>
+        {% for status in statuses %}
+            <span style="border:1px solid #ccc; padding: 2px;">{{ status }}</span>
+        {% endfor %}
+    </p>
+{% endblock %}

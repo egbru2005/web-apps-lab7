@@ -26,12 +26,16 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('news/', views.article_list, name='article_list'),
-    path('news/<slug:slug>/', views.article_detail, name='article_detail'),
+    path('stats/', views.stats_view, name='stats'),
+    path('news/<int:pk>/edit/', views.article_update, name='article_update'),
+    path('news/<int:pk>/delete/', views.article_delete, name='article_delete'),
     path('register/', views.register, name='register'),
 
     # Встроенные view для логина/логаута
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', views.logout_user, name='logout'),
+    path('news/create/', views.article_create, name='article_create'),
+    path('news/<slug:slug>/', views.article_detail, name='article_detail'),
 ]
 
 #allow users to access media
