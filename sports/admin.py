@@ -1,11 +1,50 @@
 # admin login: egbru
 # admin password: labspass
 
+import io
+
 from django.contrib import admin
+from django.http import FileResponse
+from reportlab.lib.pagesizes import A4
+# генерация pdf отчетов
+from reportlab.pdfgen import canvas
+
+from .models import *
+
+# inline для админки
+class MatchParticipationInline(admin.TabularInline):
+    model = MatchParticipation
+    extra = 1  # Количество пустых строк для добавления
+    raw_id_fields = ('athlete',)
+
 
 # Register your models here.
 
-from .models import *
+def export_match_pdf(modeladmin, request, queryset):
+    response = io.BytesIO()
+
+    p = canvas.Canvas(response, pagesize=A4)
+
+    y = 800
+    p.drawString(100, y, "Match Report")
+    y -= 40
+
+    for match in queryset:
+        text = f"{match.date_time.strftime('%Y-%m-%d')}: {match.home_team} vs {match.away_team} ({match.score_home}:{match.score_away})"
+        p.drawString(50, y, text)
+        y -= 20
+
+        if y < 50:  # Если страница кончилась
+            p.showPage()
+            y = 800
+
+    p.showPage()
+    p.save()
+    response.seek(0)
+    return FileResponse(response, as_attachment=True, filename="report.pdf")
+
+
+export_match_pdf.short_description = "Download pdf report"
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
@@ -13,6 +52,8 @@ class MatchAdmin(admin.ModelAdmin):
     list_filter = ('status', 'tournament')
     # Чтобы не грузить список всех команд мира в список:
     raw_id_fields = ('home_team', 'away_team', 'tournament')
+    inlines = [MatchParticipationInline]
+    actions = [export_match_pdf]
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
