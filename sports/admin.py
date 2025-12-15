@@ -14,14 +14,11 @@ class MatchAdmin(admin.ModelAdmin):
     # Чтобы не грузить список всех команд мира в список:
     raw_id_fields = ('home_team', 'away_team', 'tournament')
 
-admin.site.register(Sport)
-
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'sport', 'city')
     search_fields = ('name',)
 
-admin.site.register(Tournament)
 @admin.register(Athlete)
 class AthleteAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'current_team')
@@ -38,4 +35,6 @@ class ArticleAdmin(admin.ModelAdmin):
     # В таком случае при большом количестве игроков будет очень большой удар по производительности.
     raw_id_fields = ('match', 'related_teams', 'related_athletes', 'author')
 
+admin.site.register(Tournament)
+admin.site.register(Sport)
 admin.site.register(Tag)
