@@ -8,6 +8,8 @@ from django.db.models import Sum, Q
 from django.utils import timezone
 from .models import Article, Match, Team
 from django.contrib.auth import logout
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 #from .forms import UserRegisterForm  # Форму создадим позже
 
 
@@ -70,8 +72,6 @@ def team_detail(request, pk):
 
 
 # Задание Регистрация пользователя
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
 
 
 def register(request):
