@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
@@ -144,7 +146,7 @@ class Tag(models.Model):
 
 class Article(models.Model):
     title = models.CharField("Title", max_length=200)
-    slug = models.SlugField(unique=True, help_text="URL")
+    slug = models.SlugField(unique=True, blank=True, help_text="URL")
     content = models.TextField("Article content", blank=True)
 
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -176,6 +178,19 @@ class Article(models.Model):
     def get_absolute_url(self):
         # Генерирует ссылку вида /news/my-article-slug/ (использование get_absolute_url)
         return reverse('article_detail', kwargs={'slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        # Если слаг не установлен (пустой)
+        if not self.slug:
+            self.slug = slugify(self.title)
+
+            # Если слаг получился пустым (например, заголовок из спецсимволов)
+            # или если такой слаг уже есть в базе — добавляем уникальный хвост
+            if not self.slug or Article.objects.filter(slug=self.slug).exists():
+                unique_suffix = str(uuid.uuid4())[:8]
+                self.slug = f"{self.slug}-{unique_suffix}"
+
+        super().save(*args, **kwargs)
 
     class Meta:
         #class Meta: ordering

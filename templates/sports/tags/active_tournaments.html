@@ -1,0 +1,32 @@
+{% load static %}
+
+<div class="recent-posts-widget widget-item">
+
+    <h3 class="widget-title">Текущие турниры</h3>
+
+    {% for tournament in tournaments %}
+        <div class="post-item">
+
+            <!-- Иконка -->
+            {% if tournament.sport.icon %}
+                <img src="{{ tournament.sport.icon.url }}" alt="{{ tournament.sport.name }}" class="flex-shrink-0" style="object-fit: contain; background: #f0f0f0; padding: 5px;">
+
+            <!-- Заглушка для иконки -->
+            {% else %}
+                <img src="{% static 'assets/img/default-trophy.png' %}" alt="Trophy" class="flex-shrink-0" style="opacity: 0.5;">
+            {% endif %}
+
+            <div>
+                <h4><a href="#">{{ tournament.name }}</a></h4>
+
+               <span style="color: #888; font-size: 0.85rem; display: block; margin-top: 5px;">
+                    {{ tournament.sport.name }}
+               </span>
+            </div>
+
+        </div><!-- End post item-->
+    {% empty %}
+        <p style="padding: 10px;">Нет активных турниров.</p>
+    {% endfor %}
+
+</div>

@@ -20,7 +20,7 @@ from django.contrib.auth.forms import UserCreationForm
 def home(request):
     # Задание filter() и __
     # Ищем матчи, дата которых больше или равна (gte) текущему времени
-    upcoming_matches = Match.objects.filter(date_time__gte=timezone.now())
+    upcoming_matches = Match.objects.filter(date_time__date__gte=timezone.now().date())
 
     # Задание exclude()
     # Исключаем отмененные матчи (предположим, такой статус есть)

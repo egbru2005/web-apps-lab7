@@ -1,5 +1,5 @@
 from django import template
-from ..models import Article
+from ..models import Article, Tournament
 
 register = template.Library()
 
@@ -26,3 +26,12 @@ def show_latest_news(count=3):
     #Возвращает QuerySet последних новостей для отрисовки в боковой панели
     latest = Article.published.all().order_by('-created_at')[:count]
     return {'latest_news': latest}
+
+@register.inclusion_tag('sports/tags/active_tournaments.html')
+def show_active_tournaments(count=5):
+    """
+    Возвращает список активных турниров.
+    Сортируем по id или name, берем первые 'count' штук.
+    """
+    tournaments = Tournament.objects.filter(is_active=True).order_by('name')[:count]
+    return {'tournaments': tournaments}

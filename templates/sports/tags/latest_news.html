@@ -1,5 +1,69 @@
-<ul>
-    {% for news in latest_news %}
-        <li><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></li>
-    {% endfor %}
-</ul>
+{% load static %}
+
+<!-- Slider Section -->
+<section id="slider" class="slider section dark-background">
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="swiper init-swiper">
+
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": "auto",
+          "centeredSlides": true,
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          },
+          "navigation": {
+            "nextEl": ".swiper-button-next",
+            "prevEl": ".swiper-button-prev"
+          }
+        }
+      </script>
+
+      <div class="swiper-wrapper">
+
+        {% for article in latest_news %}
+
+            {% if article.preview_image %}
+                {%  with image_url=article.preview_image.url %}
+                    <div class="swiper-slide" style="background-image: url('{{ image_url }}');">
+                {% endwith %}
+            {% else %}
+                <div class="swiper-slide" style="background-image: url('{% static 'assets/img/post-slide-1.jpg' %}');">
+            {% endif %}
+
+              <div class="content">
+                <h2><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h2>
+
+                <p>{{ article.content|truncatewords:20 }}</p>
+              </div>
+            </div>
+
+        {% empty %}
+            <div class="swiper-slide" style="background-image: url('{% static 'assets/img/post-slide-1.jpg' %}');">
+              <div class="content">
+                <h2>Новости скоро появятся</h2>
+                <p>Пока что здесь пусто.</p>
+              </div>
+            </div>
+        {% endfor %}
+
+      </div>
+
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+
+      <div class="swiper-pagination"></div>
+    </div>
+
+  </div>
+
+</section><!-- /Slider Section -->

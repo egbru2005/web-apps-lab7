@@ -1,41 +1,48 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load sports_tags %} <!-- Загружаем наши теги -->
 
 {% block content %}
-    <h1>Матчи</h1>
+    <!-- Match overview Section -->
+    <section id="contact" class="contact section">
 
-    <!-- Использование 2х шаблонных фильтров -->
-    <!-- 1. Фильтр date -->
-    <p>Сегодня: {{ matches.0.date_time|date:"d M Y" }}</p>
-    <!-- 2. Фильтр upper -->
-    <p>Статус первого матча: {{ matches.0.get_status_display|upper }}</p>
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-    <ul>
-    {% for match in matches %}
-        <li>
-            <!-- Использование __ (в шаблоне через точку) -->
-            {{ match.home_team.name }} - {{ match.away_team.name }}
+        <h1>Обзор матчей</h1>
+        <p>Сегодня: {{ matches.0.date_time|date:"d M Y" }}</p>
+        <p>Статус первого матча: {{ matches.0.get_status_display|upper }}</p>
+        <div class="row gy-4">
+            {% for match in matches %}
+              <div>
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                  <i class="bi bi-geo-alt flex-shrink-0"></i>
+                  <div>
+                    <h3>{{ match.home_team }} vs {{ match.away_team }} - {{ match.get_status_display }}</h3>
+                    <p>{{ match.date_time }} (Всего голов: {% count_stats match.score_home match.score_away %})</p>
+                  </div>
+                </div><!-- End Info Item -->
+            {% endfor %}
 
-            <!-- Использование простого тега -->
-            (Всего голов: {% count_stats match.score_home match.score_away %})
-        </li>
-    {% endfor %}
-    </ul>
+          </div>
 
-    <!-- Использование inclusion tag -->
-    <div class="sidebar">
-        <h3>Свежие новости</h3>
-        {% show_latest_news 5 %}
-    </div>
+        </div>
 
-    <!-- Использование тега с контекстом -->
-    <p style="color: {% user_status_color %}">Ваш статус пользователя</p>
+      </div>
 
-    <!-- Аутентификация -->
-    {% if user.is_authenticated %}
-        Привет, {{ user.username }}! <a href="{% url 'logout' %}">Выйти</a>
-    {% else %}
-        <a href="{% url 'login' %}">Войти</a> | <a href="{% url 'register' %}">Регистрация</a>
-    {% endif %}
+    </section><!-- /Match overview Section -->
+
+    <!-- News Section -->
+    <section id="trending-category" class="trending-category section">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <h1>Свежие новости</h1>
+            {% show_latest_news 5 %}
+        </div>
+    </section><!-- /News Section -->
+
+    <!-- Виджет турниров -->
+    <div class="recent-posts-widget widget-item">
+        {% show_active_tournaments 5 %}
+    </div><!-- /Виджет турниров -->
+
 
 {% endblock %}
