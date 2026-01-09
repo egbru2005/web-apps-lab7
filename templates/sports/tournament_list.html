@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="section-title">
+        <h2>Турниры и Лиги</h2>
+        <p>Список всех спортивных чемпионатов</p>
+    </div>
+
+    <div class="row">
+        {% for tournament in tournaments %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm" style="border: none; transition: 0.3s;">
+                <div class="card-body d-flex flex-column">
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                            {% if tournament.sport.icon %}
+                                <img src="{{ tournament.sport.icon.url }}" alt="{{ tournament.sport.name }}" style="width: 30px; height: 30px; object-fit: contain;">
+                            {% else %}
+                                <span style="font-size: 24px;">🏆</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h6 class="text-uppercase text-muted mb-0" style="font-size: 0.8rem;">
+                            {{ tournament.sport.name }}
+                        </h6>
+                    </div>
+
+                    <h4 class="card-title">
+                        <a href="#" style="color: #333; text-decoration: none;">
+                            {{ tournament.name }}
+                        </a>
+                    </h4>
+                    
+                    <p class="card-text text-muted" style="font-size: 0.9rem;">
+                        {{ tournament.description|default:"Описание турнира отсутствует."|truncatewords:15 }}
+                    </p>
+
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        {% if tournament.is_active %}
+                            <span class="badge bg-success">Активен</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Завершен</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <p>Турниров пока нет.</p>
+        {% endfor %}
+    </div>
+
+    {% if tournaments.paginator.num_pages > 1 %}
+    <div class="pagination justify-content-center mt-4">
+        <span class="step-links">
+            {% if tournaments.has_previous %}
+                <a class="btn btn-outline-secondary btn-sm" href="?page=1">&laquo;</a>
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ tournaments.previous_page_number }}"><</a>
+            {% endif %}
+
+            <span class="mx-2">
+                Стр. {{ tournaments.number }} из {{ tournaments.paginator.num_pages }}
+            </span>
+
+            {% if tournaments.has_next %}
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ tournaments.next_page_number }}">></a>
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ tournaments.paginator.num_pages }}">&raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
+{% endblock %}

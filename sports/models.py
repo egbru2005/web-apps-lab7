@@ -80,10 +80,10 @@ class Athlete(models.Model):
 class Match(models.Model):
     #choices в поле модели
     STATUS_CHOICES = (
-        ("scheduled", "Scheduled"),
-        ("live", "Live"),
-        ("finished", "Finished"),
-        ("canceled", "Canceled"),
+        ("scheduled", "Запланирован"),
+        ("live", "Идет"),
+        ("finished", "Завершился"),
+        ("canceled", "Отменен"),
     )
 
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="matches")

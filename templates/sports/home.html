@@ -17,8 +17,8 @@
                 <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
                   <i class="bi bi-geo-alt flex-shrink-0"></i>
                   <div>
-                    <h3>{{ match.home_team }} vs {{ match.away_team }} - {{ match.get_status_display }}</h3>
-                    <p>{{ match.date_time }} (Всего голов: {% count_stats match.score_home match.score_away %})</p>
+                    <h3>{{ match.tournament.name }}: {{ match.home_team }} vs {{ match.away_team }}</h3>
+                    <p>{{ match.get_status_display }} - {{ match.date_time }} (Всего голов: {% count_stats match.score_home match.score_away %})</p>
                   </div>
                 </div><!-- End Info Item -->
             {% endfor %}

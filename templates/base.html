@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - ZenBlog Bootstrap Template</title>
+  <title>Спорт-Инфо Новости</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -50,9 +50,12 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="{% url 'home' %}" class="active">Home</a></li>
+            <li><a href="{% url 'home' %}" class="active">Обзор</a></li>
+            <li><a href="{% url 'tournament_list' %}" class="active">Турниры</a></li>
+            <li><a href="{% url 'article_list' %}" class="active">Архив новостей</a></li>
 
         </ul>
+
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 

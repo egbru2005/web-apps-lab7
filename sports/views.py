@@ -10,7 +10,7 @@ from django.db.models import Sum, Q
 from django.utils import timezone
 
 from .forms import ArticleForm
-from .models import Article, Match, Team
+from .models import Article, Match, Team, Tournament
 from django.contrib.auth import logout
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
@@ -59,6 +59,24 @@ def article_list(request):
 
     return render(request, 'sports/article_list.html', {'posts': posts})
 
+
+def tournament_list(request):
+    # Берем все турниры, сортируем сначала по виду спорта, потом по названию
+    # select_related('sport') загружает данные о спорте сразу (для иконок)
+    object_list = Tournament.objects.select_related('sport').all().order_by('-is_active', 'sport__name', 'name')
+
+    # Пагинация (например, по 9 штук на страницу, чтобы была сетка 3x3)
+    paginator = Paginator(object_list, 9)
+    page = request.GET.get('page')
+
+    try:
+        tournaments = paginator.page(page)
+    except PageNotAnInteger:
+        tournaments = paginator.page(1)
+    except EmptyPage:
+        tournaments = paginator.page(paginator.num_pages)
+
+    return render(request, 'sports/tournament_list.html', {'tournaments': tournaments})
 
 def article_detail(request, slug):
     # Задание get_object_or_404
